@@ -11,7 +11,7 @@ import threading
 
 class TCPRequest:
 
-    def __init__(self, addr: tuple, idx):
+    def __init__(self, addr: tuple):
         """
         an TCP class to get the image from the raspberry pi
         :param addr: ip of raspberry pi
@@ -20,7 +20,6 @@ class TCPRequest:
         self.frame = None
         self.run_flag = True
         self.fps = 0
-        self.idx = idx
 
     def receive_video(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
