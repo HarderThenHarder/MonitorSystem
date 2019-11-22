@@ -8,6 +8,8 @@ import time
 import tkinter.messagebox as msg
 from FaceDetector import FaceDetector
 from Drawer import Drawer
+import os
+from datetime import datetime
 
 
 MONITOR_ADDR = [('192.168.1.102', 7777), ('192.168.10.16', 7777), ("127.0.0.1", 7777)]
@@ -29,6 +31,14 @@ class CameraWindow:
         self.start_btn.grid(row=5, column=idx + 1)
         self.split_btn = tk.Button(window, text='Split This Window', command=self.split_window, width=39, font=('Arial', 10))
         self.split_btn.grid(row=6, column=idx + 1)
+        self.face_detect_flag = tk.BooleanVar()
+        self.face_detect_checkbutton = tk.Checkbutton(window, text="Open Face Detection   (Detect face in Split window)", variable=self.face_detect_flag)
+        self.face_detect_checkbutton.grid(row=7, column=idx + 1, sticky='w', ipadx=2)
+        self.face_save_flag = tk.BooleanVar()
+        self.face_save_checkbutton = tk.Checkbutton(window, text="Save Face Image     (Save face when face detected)", variable=self.face_save_flag)
+        self.face_save_checkbutton.grid(row=8, column=idx + 1, sticky='w', ipadx=2)
+        self.face_detector = FaceDetector()
+        self.max_face_store_number = 200
         self.thread_list = []
         self.tcp = None
 
@@ -86,24 +96,51 @@ class CameraWindow:
             self.start_btn.configure(text="Start")
             self.stop_monitor()
 
+    def save_face(self, frame, rect):
+        if not os.path.exists("face_history"):
+            os.makedirs("face_history")
+        # remove img dir if this directory is full of pictures
+        if len(os.listdir("face_history")) > self.max_face_store_number:
+            os.removedirs("face_history")
+            os.mkdir("face_history")
+        x, y, w, h = rect
+        file_name = os.path.join("face_history", datetime.now().strftime("%Y_%m_%d-%H_%M_%S") + ".jpg")
+        cv2.imwrite(file_name, frame[y-10:y+h+10, x-10:x+w+10])
+        print("Face Image saved as -> face_history/" + file_name)
+
     def show_max_window(self):
         while True:
             frame = self.tcp.frame.copy()
+            face_detect_bool = self.face_detect_flag.get()
+            face_save_bool = self.face_save_flag.get()
 
             # detect the face and label
-            face_detector = FaceDetector()
-            face_max = face_detector.detect_face(frame)
-            print(face_max)
-            face_list = face_detector.get_face_list()
-            if len(face_list) > 0:
-                for face in face_list:
-                    Drawer.label_face(frame, face.get_rect())
+            if face_detect_bool:
+                self.face_detector.detect_face(frame)
+                face_list = self.face_detector.get_face_list()
+                if len(face_list) > 0:
+                    for face in face_list:
+                        Drawer.label_face(frame, face.get_rect())
+                        # save face(s)
+                        if face_save_bool is True:
+                            self.save_face(self.tcp.frame, face.get_rect())
+            else:
+                if face_save_bool:
+                    msg.showwarning("Warning", "Open Face Detection before save face image!")
+                    self.face_save_flag.set(False)
 
             # Write Text on the frame
             localtime = time.asctime(time.localtime(time.time()))
             width = frame.shape[0]
             cv2.putText(frame, localtime, (int(0.9 * width), 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0))
-            cv2.putText(frame, "Person(s) Number: %2d" % len(face_list), (int(0.9 * width), 35), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0))
+            if face_detect_bool is True:
+                cv2.putText(frame, "Face Detection: True", (int(0.9 * width), 35), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0))
+            else:
+                cv2.putText(frame, "Face Detection: False", (int(0.9 * width), 35), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255))
+            if face_save_bool is True:
+                cv2.putText(frame, "Face Save     : True", (int(0.9 * width), 50), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0))
+            else:
+                cv2.putText(frame, "Face Save     : False", (int(0.9 * width), 50), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255))
 
             cv2.imshow("Split@Monitor %d" % (self.idx + 1), frame)
             if cv2.waitKey(1) == ord('q'):

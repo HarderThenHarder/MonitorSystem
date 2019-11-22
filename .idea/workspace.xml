@@ -2,13 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="30eb9a38-2a5b-409e-9d8a-33a49549815e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/Drawer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Face.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FaceDetector.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/haarcascade_frontalface_alt2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/haarcascade_frontalface_default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/timg.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/timg2.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CameraWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/CameraWindow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -166,7 +159,14 @@
       <option name="project" value="LOCAL" />
       <updated>1574327252362</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Add face_detector module.">
+      <created>1574406590927</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1574406590927</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -182,6 +182,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Firrst Commit!" />
-    <option name="LAST_COMMIT_MESSAGE" value="Firrst Commit!" />
+    <MESSAGE value="Add face_detector module." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add face_detector module." />
   </component>
 </project>

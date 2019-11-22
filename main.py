@@ -11,7 +11,7 @@ def main():
 
     window = tk.Tk()
     window.title("Camera Monitor System v1.0")
-    window.geometry("1030x480")
+    window.geometry("1010x520")
 
     # title
     title = tk.Label(window, text="Camera Monitor - v1.0", bg='green', fg="white", font=('Arial', 12), width=30, height=2)
