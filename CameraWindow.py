@@ -6,9 +6,11 @@ import threading
 import cv2
 import time
 import tkinter.messagebox as msg
+from FaceDetector import FaceDetector
+from Drawer import Drawer
 
 
-MONITOR_ADDR = [('192.168.10.16', 7777)]
+MONITOR_ADDR = [('192.168.1.102', 7777), ('192.168.10.16', 7777), ("127.0.0.1", 7777)]
 
 
 class CameraWindow:
@@ -48,9 +50,9 @@ class CameraWindow:
         try:
             print("Connecting to the monitor...")
             self.tcp = TCPRequest(MONITOR_ADDR[self.idx])
+            t = threading.Thread(target=self.tcp.start)
             print("Connected!")
             print("Waiting for Image...")
-            t = threading.Thread(target=self.tcp.start)
             self.thread_list.append(t)
             t.start()
 
@@ -86,7 +88,24 @@ class CameraWindow:
 
     def show_max_window(self):
         while True:
-            cv2.imshow("Split@Monitor %d" % (self.idx + 1), self.tcp.frame)
+            frame = self.tcp.frame.copy()
+
+            # detect the face and label
+            face_detector = FaceDetector()
+            face_max = face_detector.detect_face(frame)
+            print(face_max)
+            face_list = face_detector.get_face_list()
+            if len(face_list) > 0:
+                for face in face_list:
+                    Drawer.label_face(frame, face.get_rect())
+
+            # Write Text on the frame
+            localtime = time.asctime(time.localtime(time.time()))
+            width = frame.shape[0]
+            cv2.putText(frame, localtime, (int(0.9 * width), 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0))
+            cv2.putText(frame, "Person(s) Number: %2d" % len(face_list), (int(0.9 * width), 35), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0))
+
+            cv2.imshow("Split@Monitor %d" % (self.idx + 1), frame)
             if cv2.waitKey(1) == ord('q'):
                 cv2.destroyAllWindows()
                 break

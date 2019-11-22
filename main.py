@@ -10,7 +10,7 @@ sub_window_list = []
 def main():
 
     window = tk.Tk()
-    window.title("Camera Monitor System")
+    window.title("Camera Monitor System v1.0")
     window.geometry("1030x480")
 
     # title
